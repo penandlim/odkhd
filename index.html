@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>ODKHD - m3u8 Extractor</title>
+  <link rel="stylesheet" href="main.css" type="text/css">
+  </head>
+  <body>
+  
+	<div id="loading"></div>
+
+	<div class="overlay">
+		<div class="spinner">
+		  <div class="dot1"></div>
+		  <div class="dot2"></div>
+		</div>
+	</div>
+  
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-lazyload/10.12.0/lazyload.min.js"></script>  <script type="text/javascript">
+   function autorun()
+   {
+    $.ajaxPrefilter(function(options) {
+    if (options.crossDomain && jQuery.support.cors) {
+        options.url = 'https://cors-anywhere.herokuapp.com/' + options.url;
+    }
+});
+
+var myLazyLoad = new LazyLoad({
+    elements_selector: ".lazy"
+});
+
+function pad(n) {
+    return (n < 10) ? '0' + n : '' + n;
+}
+
+function loadurl(s) {
+	$(".overlay").stop().fadeIn();
+    $.ajax(
+        {
+            url: s,
+            dataType: "html",
+            success: function(data) {
+            	$(".overlay").stop().fadeOut();
+                // $("#update").innerHTML = data;
+                var ks = data.split("\n");
+
+                var url = ""
+
+                for(var i = 0; i < ks.length; i++) {
+                    if(ks[i].includes("m3u8")) {
+                        console.log(ks[i]);
+                        url = "" + ks[i];
+                        break;
+                    }
+                }
+
+                url = url.substring(url.indexOf("'") + 1, url.lastIndexOf("'"));
+                url = url.replace("playlist_720", "playlist_1080");
+
+                console.log(url);
+                var person = prompt("Stream link:", url);
+
+            },
+            error: function(e) 
+            {
+                alert('Error: ' + e);
+            }
+        });
+
+}
+
+function formatDate(d) {
+	
+
+    var month = (d.getMonth() + 1),
+        day = d.getDate(),
+        year = d.getFullYear(),
+        hour = d.getHours(),
+        minute = d.getMinutes();
+        
+    var daynight = "";
+        
+    if (hour >= 12) {
+        daynight = "PM";
+        if (hour > 12)
+        	hour -= 12;
+    } else {
+    	if (hour === 0) {
+        	hour = 12;
+    	}
+        daynight = "AM";
+    }
+
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+    if (hour.length < 2) hour = '0' + hour;
+    if (minute.length < 2) minute = '0' + minute;
+
+    return year + "/" + pad(month) + "/" + pad(day) + " " + pad(hour) + ":" + pad(minute) + " " + daynight;
+}
+
+
+
+
+$(".overlay").stop().fadeIn();
+
+$.getJSON('https://www.ondemandkorea.com/includes15/categories/variety_en', function(data) {
+	$(".overlay").stop().fadeOut();
+
+	function sortResults(prop, asc) {
+        data = data.sort(function(a, b) {
+            if (asc) {
+                return (a[prop] > b[prop]) ? 1 : ((a[prop] < b[prop]) ? -1 : 0);
+            } else {
+                return (b[prop] > a[prop]) ? 1 : ((b[prop] < a[prop]) ? -1 : 0);
+            }
+        });
+    }
+    
+    sortResults("latest", false);
+    
+    var d = new Date(0);
+    
+    $.each(data, function(i, item) {
+    
+    	var container = $('<div />', { class: "container" });
+        
+        var linkToEp = 'https://www.ondemandkorea.com' + item.postName;
+        
+        container.append("<img class='lazy' src='"+ item.img + "' alt='preview' _link='" + linkToEp +"'></img>");
+        container.append("<p>"+ item.title + "</p>");
+        
+        d = new Date(0);
+        // The 0 there is the key, which sets the date to the epoch
+        d.setUTCSeconds(item.latest);
+        var date = formatDate(d);
+        container.append("<p>"+ date + "</p>");
+        
+        //var url = "https://ak-cf-hls-ondemandkorea.akamaized.net/v1/"+ d.getFullYear() + d. +"/variety/moms-diary-my-ugly-duckling/moms-diary-my-ugly-duckling-e98/playlist_720.m3u8"
+        
+    
+    	$(document.body).append(container);
+    });
+        $('img').on('click', function () {
+        	loadurl($(this).attr("_link"));
+    });
+});
+
+   }
+   if (window.addEventListener) window.addEventListener("load", autorun, false);
+   else if (window.attachEvent) window.attachEvent("onload", autorun);
+   else window.onload = autorun;
+  </script>
+  </body>
+</html>
