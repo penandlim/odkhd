@@ -81,3 +81,9 @@ p {
     -webkit-transform: scale(1.0);
   }
 }
+
+
+#stream {
+	visibility: hidden;
+	
+}

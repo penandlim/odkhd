@@ -31,6 +31,7 @@
 <script type="text/javascript">
    function autorun()
    {
+	 
    
 	var player = videojs('stream');
 	
@@ -76,8 +77,8 @@ function loadurl(s) {
 
                 console.log(url);
                 var person = prompt("Stream link:", url);
-				$("#streamSrc").attr("src", url);
-				
+				player.src(url);
+				$('#stream').css('visibility','visible').hide().fadeIn();
 				player.play();
 
             },
