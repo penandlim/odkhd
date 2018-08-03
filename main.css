@@ -82,13 +82,8 @@ p {
   }
 }
 
-
-#stream {
-	display:none;
-	
-}
-
 #vid-container {
+	display:none;
 	margin: auto;
      width: 600px;
      height: 300px;  
