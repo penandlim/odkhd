@@ -58,7 +58,9 @@ function loadurl(s) {
             url: s,
             dataType: "html",
             success: function(data) {
-            	$(".overlay").stop().fadeOut();
+				$(".spinner").stop().fadeOut();
+			
+			
                 // $("#update").innerHTML = data;
                 var ks = data.split("\n");
 
@@ -79,7 +81,7 @@ function loadurl(s) {
                 var person = prompt("Stream link:", url);
 				
 				
-				$(".spinner").stop().fadeOut();
+				
 				
 				player.src(url);
 				$('#stream').css('visibility','visible').hide().fadeIn();
