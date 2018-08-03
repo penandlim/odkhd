@@ -52,7 +52,7 @@ function pad(n) {
 
 
 function loadurl(s) {
-	$(".spinner").stop().fadeIn();
+	$(".overlay").stop().fadeIn();
     $.ajax(
         {
             url: s,
@@ -77,6 +77,10 @@ function loadurl(s) {
 
                 console.log(url);
                 var person = prompt("Stream link:", url);
+				
+				
+				$(".spinner").stop().fadeOut();
+				
 				player.src(url);
 				$('#stream').css('visibility','visible').hide().fadeIn();
 				player.play();
