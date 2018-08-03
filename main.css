@@ -87,3 +87,10 @@ p {
 	display:none;
 	
 }
+
+#vid-container {
+	margin: auto;
+     width: 600px;
+     height: 300px;  
+	
+}
