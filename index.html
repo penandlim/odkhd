@@ -10,11 +10,13 @@
 	<div id="loading"></div>
 
 	<div class="overlay">
-		<video id="stream" width=600 height=300 class="video-js vjs-default-skin" controls>
-		  <source id="streamSrc"
-			 src="https://example.com/index.m3u8"
-			 type="application/x-mpegURL">
-		</video>
+		<div id="vid-container">
+			<video id="stream" width=600 height=300 class="video-js vjs-default-skin" controls>
+			  <source id="streamSrc"
+				 src="https://example.com/index.m3u8"
+				 type="application/x-mpegURL">
+			</video>
+		</div>
 		<div class="spinner">
 		  <div class="dot1"></div>
 		  <div class="dot2"></div>
