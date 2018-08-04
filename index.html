@@ -16,12 +16,14 @@
 
 	<div class="overlay">
 		<div class="vid-container">
-			<video id="stream" width=600 height=300 class="video-js vjs-default-skin" controls preload="none" data-setup="{}">
+			<div class="centered">
+			<video id="stream" width=853 height=480 class="video-js vjs-default-skin" controls preload="none" data-setup="{}">
 				<p class="vjs-no-js">
 				  To view this video please enable JavaScript, and consider upgrading to a web browser that
 				  <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
 				</p>
 			</video>
+			</div>
 		</div>
 		<div class="spinner">
 		  <div class="dot1"></div>
@@ -39,11 +41,15 @@
 
 <script src="https://unpkg.com/video.js@6.12.0/dist/video.min.js"></script>
 <script src="https://unpkg.com/@videojs/http-streaming/dist/videojs-http-streaming.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-hotkeys/0.2.22/videojs.hotkeys.min.js"></script>
 
 
 <script type="text/javascript">
 function autorun()
 {
+
+// Draggable Plugin
+$.fn.draggable=function(e){var t=this;var n={handle:"",cursor:"move",axis:null,containParent:false};e=$.extend(n,e);if(e.handle===""){var r=t}else{var r=t.find(e.handle)}return r.css("cursor",e.cursor).on("mousedown",function(t){if(e.handle===""){var n=$(this).addClass("draggable")}else{var n=$(this).addClass("active-handle").parent().addClass("draggable")}var i=n.css("z-index"),s=n.outerHeight(),o=n.outerWidth(),u=n.offset().top+s-t.pageY,a=n.offset().left+o-t.pageX;var f=$(this).parent();var l=f.width(),c=f.height();var h=parseInt(f.offset().left)+parseInt(f.css("padding-left").replace("px","")),p=h+l,d=parseInt(f.offset().top)+parseInt(f.css("padding-top").replace("px","")),v=d+c;n.css("z-index",1e3).parents().on("mousemove",function(t){var f=t.pageY+u-s,l=t.pageX+a-o,c=null;if(e.containParent===true){if(l<h)l=h;if(l>p-o)l=p-o;if(f<d)f=d;if(f>v-s)f=v-s}if(e.axis=="x"){c={left:l}}else if(e.axis=="y"){c={top:f}}else{c={left:l,top:f}}$(".draggable").offset(c);$(".draggable, html").on("mouseup",function(){n.parents().off("mousemove");$(r).removeClass("draggable").css("z-index",i)})});t.preventDefault()}).on("mouseup",function(){if(e.handle===""){$(this).removeClass("draggable")}else{$(this).removeClass("active-handle").parent().removeClass("draggable")}r.off("mousedown",function(e){e.preventDefault()})})}
 	var init = false;
    
 	var player = videojs('stream');
@@ -53,6 +59,14 @@ function autorun()
 	});
 	
 	$('.vid-container').on("click", function(e) {
+		e.stopPropagation();
+	});
+	
+	$('.vid-container').draggable({
+        containParent: true
+    });
+	
+	$('.centered').on("click", function(e) {
 		e.stopPropagation();
 	});
 	
