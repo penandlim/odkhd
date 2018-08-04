@@ -5,13 +5,15 @@
     <title>ODKHD - m3u8 Extractor</title>
   <link rel="stylesheet" href="main.css" type="text/css">
   <link href="https://unpkg.com/video.js@6.12.0/dist/video-js.min.css" rel="stylesheet">
-
-  <!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
-  <script src="https://unpkg.com/video.js@6.12.0/dist/ie8/videojs-ie8.min.js"></script>
+	<link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
   <link rel="stylesheet" href="video.js.css" type="text/css">
   </head>
   <body>
-  
+	<h1>ODK 1080p .m3u8 Extractor & Player</h1>
+	<div id="continue" class="modal">
+	  <p>Continue playing <a class="link" href="#"><span id="title" style="font-weight:bold"></span></a>?</p>
+	</div>
 	<div id="loading"></div>
 
 	<div class="overlay">
@@ -34,25 +36,37 @@
   
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-lazyload/10.12.0/lazyload.min.js"></script>
-
-    <!--
-      -- Include video.js and videojs-contrib-hls in your page
-      -->
-
 <script src="https://unpkg.com/video.js@6.12.0/dist/video.min.js"></script>
 <script src="https://unpkg.com/@videojs/http-streaming/dist/videojs-http-streaming.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-hotkeys/0.2.22/videojs.hotkeys.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.0/js.cookie.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 
 
 <script type="text/javascript">
+var player = videojs('stream');
+
 function autorun()
 {
+	$.modal.defaults.fadeDuration = 200;
+	$.modal.defaults.clickClose = false;
 
-// Draggable Plugin
-$.fn.draggable=function(e){var t=this;var n={handle:"",cursor:"move",axis:null,containParent:false};e=$.extend(n,e);if(e.handle===""){var r=t}else{var r=t.find(e.handle)}return r.css("cursor",e.cursor).on("mousedown",function(t){if(e.handle===""){var n=$(this).addClass("draggable")}else{var n=$(this).addClass("active-handle").parent().addClass("draggable")}var i=n.css("z-index"),s=n.outerHeight(),o=n.outerWidth(),u=n.offset().top+s-t.pageY,a=n.offset().left+o-t.pageX;var f=$(this).parent();var l=f.width(),c=f.height();var h=parseInt(f.offset().left)+parseInt(f.css("padding-left").replace("px","")),p=h+l,d=parseInt(f.offset().top)+parseInt(f.css("padding-top").replace("px","")),v=d+c;n.css("z-index",1e3).parents().on("mousemove",function(t){var f=t.pageY+u-s,l=t.pageX+a-o,c=null;if(e.containParent===true){if(l<h)l=h;if(l>p-o)l=p-o;if(f<d)f=d;if(f>v-s)f=v-s}if(e.axis=="x"){c={left:l}}else if(e.axis=="y"){c={top:f}}else{c={left:l,top:f}}$(".draggable").offset(c);$(".draggable, html").on("mouseup",function(){n.parents().off("mousemove");$(r).removeClass("draggable").css("z-index",i)})});t.preventDefault()}).on("mouseup",function(){if(e.handle===""){$(this).removeClass("draggable")}else{$(this).removeClass("active-handle").parent().removeClass("draggable")}r.off("mousedown",function(e){e.preventDefault()})})}
+	// Draggable Plugin
+	$.fn.draggable=function(e){var t=this;var n={handle:"",cursor:"move",axis:null,containParent:false};e=$.extend(n,e);if(e.handle===""){var r=t}else{var r=t.find(e.handle)}return r.css("cursor",e.cursor).on("mousedown",function(t){if(e.handle===""){var n=$(this).addClass("draggable")}else{var n=$(this).addClass("active-handle").parent().addClass("draggable")}var i=n.css("z-index"),s=n.outerHeight(),o=n.outerWidth(),u=n.offset().top+s-t.pageY,a=n.offset().left+o-t.pageX;var f=$(this).parent();var l=f.width(),c=f.height();var h=parseInt(f.offset().left)+parseInt(f.css("padding-left").replace("px","")),p=h+l,d=parseInt(f.offset().top)+parseInt(f.css("padding-top").replace("px","")),v=d+c;n.css("z-index",1e3).parents().on("mousemove",function(t){var f=t.pageY+u-s,l=t.pageX+a-o,c=null;if(e.containParent===true){if(l<h)l=h;if(l>p-o)l=p-o;if(f<d)f=d;if(f>v-s)f=v-s}if(e.axis=="x"){c={left:l}}else if(e.axis=="y"){c={top:f}}else{c={left:l,top:f}}$(".draggable").offset(c);$(".draggable, html").on("mouseup",function(){n.parents().off("mousemove");$(r).removeClass("draggable").css("z-index",i)})});t.preventDefault()}).on("mouseup",function(){if(e.handle===""){$(this).removeClass("draggable")}else{$(this).removeClass("active-handle").parent().removeClass("draggable")}r.off("mousedown",function(e){e.preventDefault()})})}
 	var init = false;
+	var shouldContinue = false;
+	var isPlaying = false;
    
-	var player = videojs('stream');
+   
+	
+	player.ready(function() {
+	  this.hotkeys({
+		volumeStep: 0.1,
+		seekStep: 5,
+		enableModifiersForNumbers: false
+	  });
+	});
 	
 	var myLazyLoad = new LazyLoad({
 		elements_selector: ".lazy"
@@ -61,7 +75,7 @@ $.fn.draggable=function(e){var t=this;var n={handle:"",cursor:"move",axis:null,c
 	$('.vid-container').on("click", function(e) {
 		e.stopPropagation();
 	});
-	
+
 	$('.vid-container').draggable({
         containParent: true
     });
@@ -70,21 +84,33 @@ $.fn.draggable=function(e){var t=this;var n={handle:"",cursor:"move",axis:null,c
 		e.stopPropagation();
 	});
 	
+	$('.centered').on("mousedown", function(e) {
+		e.stopPropagation();
+	});
+	
 	$('.overlay').on("click", function(e) {
 		
 		if (init && player !== null) {
-			player.reset();
+			player.pause();
 			$('.overlay').fadeOut("slow", function() {
 				$('.vid-container').hide();
+				isPlaying = false;
+				player.reset();
 			});
 		}
 	});
-   
+	
+	setInterval(function(){ 
+		if (player !== null && !player.paused()) {
+			localStorage.setItem("_time", player.currentTime());
+			localStorage.setItem("_vol", player.volume());
+		}
+	}, 3000);
 	
 	
     $.ajaxPrefilter(function(options) {
     if (options.crossDomain && jQuery.support.cors) {
-        options.url = 'https://cors-anywhere.herokuapp.com/' + options.url;
+        options.url = 'https://whispering-cove-34357.herokuapp.com/' + options.url;
     }
 });
 
@@ -94,7 +120,10 @@ function pad(n) {
 }
 
 
-function loadurl(s) {
+function loadurl(s, title) {
+	document.title = 'Playing "' + title + '"';
+	localStorage.setItem("_title", title);
+	
 	$(".spinner").stop().show();
 	$(".overlay").stop().fadeIn("slow");
     $.ajax(
@@ -102,9 +131,6 @@ function loadurl(s) {
             url: s,
             dataType: "html",
             success: function(data) {
-				
-			
-			
                 // $("#update").innerHTML = data;
                 var ks = data.split("\n");
 
@@ -124,16 +150,17 @@ function loadurl(s) {
                 console.log(url);
                 var person = prompt("Stream link:", url);
 				
-				
-				
 				player.src({
 					src: url,
 					type: 'application/x-mpegURL'
 				  });
+				  
+				  localStorage.setItem("_url", url);
 				$('.vid-container').css('visibility','visible').hide().fadeIn("slow");
-				
 				$(".spinner").stop().fadeOut("slow");
-
+				isPlaying = true;
+				player.play();
+				
             },
             error: function(e) 
             {
@@ -143,6 +170,25 @@ function loadurl(s) {
 
 }
 
+function playurl(s) {
+	player.src({
+		src: s,
+		type: 'application/x-mpegURL'
+	  });
+	  
+	player.currentTime(localStorage.getItem("_time"));
+	player.volume(localStorage.getItem("_vol"));
+	
+	$('.vid-container').css('visibility','visible').hide().fadeIn("slow");
+	$(".spinner").stop().fadeOut("slow");
+	isPlaying = true;
+	player.play();
+	
+	$(".spinner").stop().hide();
+	$('.vid-container').css('visibility','visible').show();
+	$(".overlay").stop().fadeIn("slow");
+}
+
 function formatDate(d) {
 	
 
@@ -150,7 +196,8 @@ function formatDate(d) {
         day = d.getDate(),
         year = d.getFullYear(),
         hour = d.getHours(),
-        minute = d.getMinutes();
+        minute = d.getMinutes(),
+		second = d.getSeconds();
         
     var daynight = "";
         
@@ -169,8 +216,9 @@ function formatDate(d) {
     if (day.length < 2) day = '0' + day;
     if (hour.length < 2) hour = '0' + hour;
     if (minute.length < 2) minute = '0' + minute;
+	if (second.length < 2) second = '0' + second;
 
-    return year + "/" + pad(month) + "/" + pad(day) + " " + pad(hour) + ":" + pad(minute) + " " + daynight;
+    return year + "/" + pad(month) + "/" + pad(day) + " " + pad(hour) + ":" + pad(minute) + ":" + pad(second) + " " + daynight;
 }
 
 
@@ -193,22 +241,30 @@ $.getJSON('https://www.ondemandkorea.com/includes15/categories/variety_en', func
     
     var d = new Date(0);
     
-	var bigContainer = $("<div />");
+	var bigContainer = $("<div />", { class: "big-container"});
 	
     $.each(data, function(i, item) {
     
     	var container = $('<div />', { class: "container" });
         
         var linkToEp = 'https://www.ondemandkorea.com' + item.postName;
+		
+		var thumbnail = $("<img />", {
+			"class" : "lazy",
+			"data-src" : item.img,
+			"alt" : item.title,
+			"_link" : linkToEp,
+			"_title" : item.title
+		});
         
-        container.append("<img class='lazy' data-src='"+ item.img + "' alt='preview' _link='" + linkToEp +"'></img>");
+        container.append(thumbnail);
         container.append("<p>"+ item.title + "</p>");
         
         d = new Date(0);
         // The 0 there is the key, which sets the date to the epoch
-        d.setUTCSeconds(item.latest);
+        d.setUTCSeconds(item.latest - 60*60*40);
         var date = formatDate(d);
-        container.append("<p>"+ date + "</p>");
+        container.append("<p>"+ moment(d).fromNow() + "</p>");
         
         //var url = "https://ak-cf-hls-ondemandkorea.akamaized.net/v1/"+ d.getFullYear() + d. +"/variety/moms-diary-my-ugly-duckling/moms-diary-my-ugly-duckling-e98/playlist_720.m3u8"
         
@@ -222,7 +278,7 @@ $.getJSON('https://www.ondemandkorea.com/includes15/categories/variety_en', func
 	
 	
         $('img').on('click', function () {
-        	loadurl($(this).attr("_link"));
+        	loadurl($(this).attr("_link"), $(this).attr("_title"));
     });
 	
 	setTimeout(func, 100);
@@ -230,7 +286,23 @@ $.getJSON('https://www.ondemandkorea.com/includes15/categories/variety_en', func
 		$(".overlay").stop().fadeOut("slow", function() {
 			init = true;
 		});
+		
+		if (localStorage.getItem("_time") !== null) {
+			var totalSec = localStorage.getItem("_time");
+			
+			var hour = pad(parseInt(totalSec / (60 * 60)));
+			var minute = pad(parseInt(totalSec / 60));
+			var sec = pad(parseInt(totalSec % 60));
+		
+			$('#title').text(localStorage.getItem('_title') + " @ " + hour + ":" + minute + ":" + sec);
+			$('#title').on("click", function() {
+				$.modal.close();
+				playurl(localStorage.getItem('_url'));
+			});
+			$('#continue').modal();
+		}
 	}
+	
 	
 	
 });

@@ -1,18 +1,49 @@
 html, body {
     margin: 0;
     height: 100%;
+	font-family: 'Nunito', sans-serif;
+	background: ghostwhite;
+}
+
+h1 {
+	margin-left: 100px;
+	
+
+}
+
+.big-container {
+	
+	text-align: center;
+	background-color: lightblue;
 }
 
 .container {
+	background-color: transparent;
     position: relative;
     text-align: center;
     color: black;
-    border-style: inset;
     
-    margin-left:auto;
-    margin-right:auto;
+	padding-top: 10px;
+	
+    margin: 3px;
     width: 300px;
     height: 300px;
+	
+	display: inline-block;
+	overflow: hidden;
+	
+	-webkit-transition: all .2s ease-out;
+	  -moz-transition: all .2s ease-out;
+	  -o-transition: all .2s ease-out;
+	  -ms-transition: all .2s ease-out;
+	  transition: all .2s ease-out;
+}
+
+.container:hover {
+  background-color: ghostwhite;
+  cursor: pointer;
+  transform: scale(1.2, 1.2);
+  z-index:1;
 }
 
 p {
@@ -96,6 +127,11 @@ p {
 	box-shadow: 10px 10px 122px -10px rgba(0,0,0,1);
 	
     background-color: rgba(255, 255, 255, 0.6);
+	
+	border-radius: 10px;
+	border: 1px solid transparent;
+	cursor: move !important;
+	cursor: grab !important;
 }
 
 .centered {
@@ -103,4 +139,22 @@ p {
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
+	cursor: auto;
 }
+
+.link {
+    color: DeepPink;
+	text-decoration: none;
+	border-bottom: 2px solid transparent;
+
+    -webkit-transition: color ease-in-out 0.2s, border-color ease-in-out 0.2s;
+    -moz-transition: color ease-in-out 0.2s, border-color ease-in-out 0.2s;
+    -o-transition: color ease-in-out 0.2s, border-color ease-in-out 0.2s;
+    transition: color ease-in-out 0.2s, border-color ease-in-out 0.2s;
+
+}
+.link:hover {
+    color: DeepPink ;
+	border-color: DeepPink ;
+}
+
