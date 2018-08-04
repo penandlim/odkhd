@@ -294,7 +294,7 @@ $.getJSON('https://www.ondemandkorea.com/includes15/categories/variety_en', func
 			var totalSec = localStorage.getItem("_time");
 			
 			var hour = pad(parseInt(totalSec / (60 * 60)));
-			var minute = pad(parseInt(totalSec / 60));
+			var minute = pad(parseInt( (totalSec % (60 * 60)) / 60 ));
 			var sec = pad(parseInt(totalSec % 60));
 		
 			$('#title').text(localStorage.getItem('_title') + " @ " + hour + ":" + minute + ":" + sec);
