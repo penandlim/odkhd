@@ -28,7 +28,7 @@ p {
     top:0;
     left: 0;
     position: fixed;
-    z-index:1000;
+    z-index:1;
   }
   
 
@@ -83,10 +83,15 @@ p {
 }
 
 .vid-container {
+	display: none;
 	margin: -150px 0 0 -300px;
     width: 600px;
     height: 300px;
     top: 50%;
     left: 50%;
     position: absolute;
+	z-index:2;
+	-webkit-box-shadow: 10px 10px 122px -10px rgba(0,0,0,1);
+	-moz-box-shadow: 10px 10px 122px -10px rgba(0,0,0,1);
+	box-shadow: 10px 10px 122px -10px rgba(0,0,0,1);
 }

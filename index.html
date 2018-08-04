@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <title>ODKHD - m3u8 Extractor</title>
   <link rel="stylesheet" href="main.css" type="text/css">
+  <link href="https://unpkg.com/video.js@6.12.0/dist/video-js.min.css" rel="stylesheet">
+
+  <!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
+  <script src="https://unpkg.com/video.js@6.12.0/dist/ie8/videojs-ie8.min.js"></script>
+  <link rel="stylesheet" href="video.js.css" type="text/css">
   </head>
   <body>
   
@@ -11,10 +16,11 @@
 
 	<div class="overlay">
 		<div class="vid-container">
-			<video id="stream" width=600 height=300 class="video-js vjs-default-skin" controls>
-			  <source id="streamSrc"
-				 src="//d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8"
-				 type="application/x-mpegURL">
+			<video id="stream" width=600 height=300 class="video-js vjs-default-skin" controls preload="none" data-setup="{}">
+				<p class="vjs-no-js">
+				  To view this video please enable JavaScript, and consider upgrading to a web browser that
+				  <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+				</p>
 			</video>
 		</div>
 		<div class="spinner">
@@ -26,22 +32,41 @@
   
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-lazyload/10.12.0/lazyload.min.js"></script>
-<link href="https://unpkg.com/video.js/dist/video-js.css" rel="stylesheet">
 
     <!--
       -- Include video.js and videojs-contrib-hls in your page
       -->
 
-<script src="https://unpkg.com/video.js/dist/video.js"></script>
-<script src="https://unpkg.com/videojs-flash/dist/videojs-flash.js"></script>
-<script src="https://unpkg.com/videojs-contrib-hls/dist/videojs-contrib-hls.js"></script>
+<script src="https://unpkg.com/video.js@6.12.0/dist/video.min.js"></script>
+<script src="https://unpkg.com/@videojs/http-streaming/dist/videojs-http-streaming.min.js"></script>
 
 
 <script type="text/javascript">
-   function autorun()
-   {
+function autorun()
+{
+	var init = false;
+   
 	var player = videojs('stream');
+	
+	var myLazyLoad = new LazyLoad({
+		elements_selector: ".lazy"
+	});
+	
 	$('.vid-container').hide();
+	
+	$('.vid-container').on("click", function(e) {
+		e.stopPropagation();
+	});
+	
+	$('.overlay').on("click", function(e) {
+		
+		if (init && player !== null) {
+			player.reset();
+			$('.overlay').fadeOut("slow", function() {
+				$('.vid-container').hide();
+			});
+		}
+	});
    
 	
 	
@@ -51,10 +76,6 @@
     }
 });
 
-var myLazyLoad = new LazyLoad({
-    elements_selector: ".lazy"
-});
-
 
 function pad(n) {
     return (n < 10) ? '0' + n : '' + n;
@@ -62,13 +83,14 @@ function pad(n) {
 
 
 function loadurl(s) {
-	$(".overlay").stop().fadeIn();
+	$(".spinner").stop().show();
+	$(".overlay").stop().fadeIn("slow");
     $.ajax(
         {
             url: s,
             dataType: "html",
             success: function(data) {
-				$(".spinner").stop().fadeOut();
+				
 			
 			
                 // $("#update").innerHTML = data;
@@ -96,7 +118,9 @@ function loadurl(s) {
 					src: url,
 					type: 'application/x-mpegURL'
 				  });
-				$('.vid-container').css('visibility','visible').hide().fadeIn();
+				$('.vid-container').css('visibility','visible').hide().fadeIn("slow");
+				
+				$(".spinner").stop().fadeOut("slow");
 
             },
             error: function(e) 
@@ -140,11 +164,9 @@ function formatDate(d) {
 
 
 
-$(".overlay").stop().fadeIn();
+$(".overlay").stop().show();
 
 $.getJSON('https://www.ondemandkorea.com/includes15/categories/variety_en', function(data) {
-	$(".overlay").stop().fadeOut();
-
 	function sortResults(prop, asc) {
         data = data.sort(function(a, b) {
             if (asc) {
@@ -159,13 +181,15 @@ $.getJSON('https://www.ondemandkorea.com/includes15/categories/variety_en', func
     
     var d = new Date(0);
     
+	var bigContainer = $("<div />");
+	
     $.each(data, function(i, item) {
     
     	var container = $('<div />', { class: "container" });
         
         var linkToEp = 'https://www.ondemandkorea.com' + item.postName;
         
-        container.append("<img class='lazy' src='"+ item.img + "' alt='preview' _link='" + linkToEp +"'></img>");
+        container.append("<img class='lazy' data-src='"+ item.img + "' alt='preview' _link='" + linkToEp +"'></img>");
         container.append("<p>"+ item.title + "</p>");
         
         d = new Date(0);
@@ -177,11 +201,26 @@ $.getJSON('https://www.ondemandkorea.com/includes15/categories/variety_en', func
         //var url = "https://ak-cf-hls-ondemandkorea.akamaized.net/v1/"+ d.getFullYear() + d. +"/variety/moms-diary-my-ugly-duckling/moms-diary-my-ugly-duckling-e98/playlist_720.m3u8"
         
     
-    	$(document.body).append(container);
+    	$(bigContainer).append(container);
     });
+	
+	
+	$(document.body).append(bigContainer);
+	myLazyLoad.update();
+	
+	
         $('img').on('click', function () {
         	loadurl($(this).attr("_link"));
     });
+	
+	setTimeout(func, 100);
+	function func() {
+		$(".overlay").stop().fadeOut("slow", function() {
+			init = true;
+		});
+	}
+	
+	
 });
 
    }
