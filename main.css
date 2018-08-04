@@ -82,7 +82,7 @@ p {
   }
 }
 
-#vid-container {
+.vid-container {
 	margin: -150px 0 0 -300px;
     width: 600px;
     height: 300px;
