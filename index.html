@@ -107,6 +107,9 @@ function autorun()
 		}
 	}, 3000);
 	
+	if (localStorage.getItem("_vol")) {
+		player.volume(localStorage.getItem("_vol"));
+	}
 	
     $.ajaxPrefilter(function(options) {
     if (options.crossDomain && jQuery.support.cors) {
